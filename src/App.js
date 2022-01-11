@@ -8,8 +8,12 @@ import FetchRewardsApi from './fetchRApi';
  * 
  * Props: (none)
  *  State:
- * - occupations: list of occupation data objs -- populated via AJAX call
- * - states: same, but for states
+ * - selectOptions: data objs -- populated via AJAX call
+ *      - occupations: list of strings
+ *      - states: list of objs 
+ *                { name: "Illinois",
+ *                  abbreviation: "IL"
+ *                }
  * - isLoading: boolean
  * 
  * App -> FetchRewardsForm
@@ -41,13 +45,12 @@ function App() {
   },[]);
 
    /** Call API to add form data */
+   
   async function postFetchReward(formData){
     await FetchRewardsApi.postFetchData(formData);
   }
 
- 
   const { occupations, states } = selectOptions; 
-
 
   if (isLoading) {
     return <p>Loading...</p>;
