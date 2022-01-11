@@ -1,23 +1,65 @@
-import logo from './logo.svg';
+import { useState, useEffect } from 'react';
 import './App.css';
+import FetchRewardsForm from "./fetchRForm";
+import FetchRewardsApi from './fetchRApi';
+
+
+/** App Main Application 
+ * 
+ * Props: (none)
+ *  State:
+ * - occupations: list of occupation data objs -- populated via AJAX call
+ * - states: same, but for states
+ * - isLoading: boolean
+ * 
+ * App -> FetchRewardsForm
+ */
 
 function App() {
+  const [selectOptions, setSelectOptions] = useState({
+    occupations: [],
+    states: []
+  }); 
+
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  /** Load data from API */
+
+  useEffect(function () {
+    async function renderFetchRewardsData() {
+      const fetchData = await FetchRewardsApi.getFetchData();
+
+      const occupations = fetchData.occupations;
+      const states = fetchData.states; 
+
+      setSelectOptions({occupations, states});
+      setIsLoading(false);
+    }
+
+    renderFetchRewardsData()
+  },[]);
+
+   /** Call API to add form data */
+  async function postFetchReward(formData){
+    await FetchRewardsApi.postFetchData(formData);
+  }
+
+ 
+  const { occupations, states } = selectOptions; 
+
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h3 className="FetchHeading">Fetch Rewards Form Submission</h3>
+      <FetchRewardsForm
+        occupations={occupations} 
+        states={states} 
+        postFetchReward={postFetchReward}/>
     </div>
   );
 }
